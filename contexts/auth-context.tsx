@@ -1,4 +1,4 @@
- "use client";
+"use client";
 import React, { createContext, useContext, useEffect, useState } from "react";
 import { auth, db } from "@/lib/firebase";
 import { onAuthStateChanged } from "firebase/auth";
@@ -13,11 +13,11 @@ export const AuthProvider = ({ children }) => {
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, async (user) => {
       if (user) {
-        const userDoc = await getDoc(doc(db, "users", user.uid));
-        setUser({ ...user, ...userDoc.data() });
-      } else {
-        setUser(null);
-      }
+        try {
+          const userDoc = await getDoc(doc(db, "users", user.uid));
+          setUser({ ...user, ...userDoc.data() });
+        } catch (e) { setUser(user); }
+      } else { setUser(null); }
       setLoading(false);
     });
     return () => unsubscribe();
